@@ -1,6 +1,9 @@
+import { classes } from '@automapper/classes';
+import { AutomapperModule } from '@automapper/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 import { appConfig, dbConfig } from './config';
 import { DatabaseModule } from './modules';
@@ -15,6 +18,12 @@ import { DatabaseModule } from './modules';
         }),
         JwtModule.register({}),
         DatabaseModule,
+        AutomapperModule.forRoot({
+            strategyInitializer: classes(),
+        }),
+        ThrottlerModule.forRoot({
+            throttlers: [{ ttl: 1000, limit: 5 }],
+        }),
     ],
     controllers: [],
     providers: [],

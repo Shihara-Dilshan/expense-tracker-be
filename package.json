@@ -22,6 +22,8 @@
     "typecheck": "tsc -p ./tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@automapper/classes": "^8.8.1",
+    "@automapper/core": "^8.8.1",
     "@automapper/nestjs": "^8.8.1",
     "@nestjs/class-validator": "^0.13.4",
     "@nestjs/common": "^11.1.6",

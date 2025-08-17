@@ -6,9 +6,5 @@ import { DBTypes } from '../types';
 
 export interface IDBConfig {
     type: Extract<DBTypes, 'mongodb'>;
-    host: string;
-    port: number;
-    user: string;
-    password: string;
-    name: string;
+    connectionString: string;
 }

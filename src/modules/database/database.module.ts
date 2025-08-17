@@ -2,10 +2,6 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-    imports: [
-        MongooseModule.forRoot(
-            'mongodb+srv://shiharadotadilshanid:dfaNmDD0HVNxHpxL@cluster0.ew2kksa.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
-        ),
-    ],
+    imports: [MongooseModule.forRoot(process.env.DB_CONNECTION_STRING)],
 })
 export class DatabaseModule {}

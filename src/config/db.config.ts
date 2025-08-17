@@ -11,10 +11,6 @@ export default registerAs(
     CONFIG_NAMESPACES.DB,
     (): IDBConfig => ({
         type: process.env.DB_TYPE as Extract<DBTypes, 'mongodb'>,
-        host: process.env.DB_HOST,
-        port: +process.env.DB_PORT,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        name: process.env.DB_NAME,
+        connectionString: process.env.DB_CONNECTION_STRING,
     }),
 );

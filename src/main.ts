@@ -37,7 +37,7 @@ async function bootstrap() {
     app.setGlobalPrefix('api');
 
     // CSRF protection
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
     // await app.register(fastifyCsrf as any);
 
     // apply global payload validation
@@ -45,7 +45,7 @@ async function bootstrap() {
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
     // Register helmet for security headers
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
     // await app.register(helmet as any, {
     //     contentSecurityPolicy: {
     //         directives: {
@@ -73,8 +73,27 @@ async function bootstrap() {
         },
     });
 
-    // TODO : this is a temporary configuration, should be updated to use the correct origin correctly later on
-    app.enableCors();
+    // TODO : this is a temporary configuration
+    app.enableCors({
+        credentials: true,
+        origin: (origin, callback) => {
+            const allowedPatterns = [
+                /^http:\/\/localhost(:\d+)?$/,
+                /^https:\/\/nextjs-boilerplate-chi-lime-38\.vercel\.app$/, // NOTE:: should not be hardcoded
+            ];
+
+            if (
+                !origin ||
+                allowedPatterns.some(pattern => pattern.test(origin))
+            ) {
+                callback(null, true);
+            } else {
+                console.warn(`Blocked by CORS: ${origin}`);
+                callback(new Error('Not allowed by CORS'), false);
+            }
+        },
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
+    });
 
     // NOTE:: not a proper way to handle this, due to an issue with heroku
     await app.listen(process.env.PORT, process.env.HOST);

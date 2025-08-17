@@ -7,6 +7,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 
 import { appConfig, dbConfig } from './config';
 import { DatabaseModule } from './modules';
+import { ExpenseModule } from './modules/expense/expense.module';
 
 @Module({
     imports: [
@@ -24,6 +25,7 @@ import { DatabaseModule } from './modules';
         ThrottlerModule.forRoot({
             throttlers: [{ ttl: 1000, limit: 5 }],
         }),
+        ExpenseModule,
     ],
     controllers: [],
     providers: [],

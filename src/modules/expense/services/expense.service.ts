@@ -55,12 +55,15 @@ export class ExpenseService {
         const skip = (page - 1) * limit;
         const query: any = { userId };
         if (filter.search) {
-            (
-                query as { description?: { $regex: string; $options: string } }
-            ).description = {
-                $regex: String(filter.search),
-                $options: 'i',
-            };
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            query.$or = [
+                {
+                    description: {
+                        $regex: String(filter.search),
+                        $options: 'i',
+                    },
+                },
+            ];
         }
         const [results, totalResults] = await Promise.all([
             this.expenseModel

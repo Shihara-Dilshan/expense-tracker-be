@@ -1,7 +1,7 @@
 import fastifyCsrf from '@fastify/csrf-protection';
 import helmet from '@fastify/helmet';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+// import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import {
     FastifyAdapter,
@@ -11,8 +11,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
 import { HttpExceptionFilter, ThrottlerExceptionFilter } from './filters';
-import { CONFIG_NAMESPACES } from './shared/constants';
-import { IAppConfig } from './shared/interfaces';
+// import { CONFIG_NAMESPACES } from './shared/constants';
+// import { IAppConfig } from './shared/interfaces';
 
 async function bootstrap() {
     const app = await NestFactory.create<NestFastifyApplication>(
@@ -24,9 +24,9 @@ async function bootstrap() {
     app.useGlobalFilters(new HttpExceptionFilter());
     app.useGlobalFilters(new ThrottlerExceptionFilter());
 
-    const { port, host } = app
-        .get(ConfigService)
-        .get<IAppConfig>(CONFIG_NAMESPACES.APP);
+    // const { host } = app
+    //     .get(ConfigService)
+    //     .get<IAppConfig>(CONFIG_NAMESPACES.APP);
 
     // Uri versioning
     app.enableVersioning({
@@ -75,7 +75,8 @@ async function bootstrap() {
     // TODO : this is a temporary configuration, should be updated to use the correct origin correctly later on
     app.enableCors();
 
-    await app.listen(port, host);
+    // NOTE:: not a proper way to handle this, due to an issue with heroku
+    await app.listen(process.env.PORT, '0.0.0.0');
 }
 
 bootstrap();

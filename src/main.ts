@@ -1,5 +1,5 @@
-import fastifyCsrf from '@fastify/csrf-protection';
-import helmet from '@fastify/helmet';
+// import fastifyCsrf from '@fastify/csrf-protection';
+// import helmet from '@fastify/helmet';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 // import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -11,6 +11,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
 import { HttpExceptionFilter, ThrottlerExceptionFilter } from './filters';
+
 // import { CONFIG_NAMESPACES } from './shared/constants';
 // import { IAppConfig } from './shared/interfaces';
 
@@ -37,7 +38,7 @@ async function bootstrap() {
 
     // CSRF protection
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    await app.register(fastifyCsrf as any);
+    // await app.register(fastifyCsrf as any);
 
     // apply global payload validation
     // NOTE:: migrate to Using APP_PIPE as a Provider if needed in future.
@@ -45,16 +46,16 @@ async function bootstrap() {
 
     // Register helmet for security headers
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    await app.register(helmet as any, {
-        contentSecurityPolicy: {
-            directives: {
-                defaultSrc: ["'self'"],
-                styleSrc: ["'self'", "'unsafe-inline'"],
-                imgSrc: ["'self'", 'data:', 'validator.swagger.io'],
-                scriptSrc: ["'self'", "'unsafe-inline'"],
-            },
-        },
-    });
+    // await app.register(helmet as any, {
+    //     contentSecurityPolicy: {
+    //         directives: {
+    //             defaultSrc: ["'self'"],
+    //             styleSrc: ["'self'", "'unsafe-inline'"],
+    //             imgSrc: ["'self'", 'data:', 'validator.swagger.io'],
+    //             scriptSrc: ["'self'", "'unsafe-inline'"],
+    //         },
+    //     },
+    // });
 
     // Configure Swagger documentation
     const config = new DocumentBuilder()
@@ -76,7 +77,7 @@ async function bootstrap() {
     app.enableCors();
 
     // NOTE:: not a proper way to handle this, due to an issue with heroku
-    await app.listen(process.env.PORT, '0.0.0.0');
+    await app.listen(process.env.PORT, process.env.HOST);
 }
 
 bootstrap();

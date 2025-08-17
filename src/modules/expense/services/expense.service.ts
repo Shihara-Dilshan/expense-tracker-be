@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { IPaginatedQueryResults } from 'src/shared/interfaces/paginated-query-results.interface';
 
 import { CreateExpenseDto, UpdateExpenseDto } from '../dtos/request';
 import { ExpenseEntity } from '../entity/expense.entity';
@@ -47,9 +48,36 @@ export class ExpenseService {
 
     async getExpenses(
         userId: string,
-        filter: any = {},
-    ): Promise<ExpenseEntity[]> {
-        return this.expenseModel.find({ userId, ...filter }).sort({ date: -1 });
+        filter: { page?: number; limit?: number; search?: string } = {},
+    ): Promise<IPaginatedQueryResults<ExpenseEntity[]>> {
+        const page = filter.page && filter.page > 0 ? filter.page : 1;
+        const limit = filter.limit && filter.limit > 0 ? filter.limit : 10;
+        const skip = (page - 1) * limit;
+        const query: any = { userId };
+        if (filter.search) {
+            (
+                query as { description?: { $regex: string; $options: string } }
+            ).description = {
+                $regex: String(filter.search),
+                $options: 'i',
+            };
+        }
+        const [results, totalResults] = await Promise.all([
+            this.expenseModel
+                .find(query)
+                .sort({ date: -1 })
+                .skip(skip)
+                .limit(limit),
+            this.expenseModel.countDocuments(query),
+        ]);
+        const totalPages = Math.ceil(totalResults / limit);
+        return {
+            results,
+            page,
+            limit,
+            totalPages,
+            totalResults,
+        };
     }
 
     async getMonthlyStats(userId: string, month: number, year: number) {
@@ -61,25 +89,5 @@ export class ExpenseService {
         });
         const total = expenses.reduce((sum, e) => sum + e.amount, 0);
         return { total, expenses };
-    }
-
-    async getMonthlyBreakdown(userId: string, month: number, year: number) {
-        const expenses = await this.getExpenses(userId, {});
-        const filtered = expenses.filter((e: ExpenseEntity) => {
-            const d = new Date(e.date);
-            return (
-                d.getMonth() + 1 === Number(month) &&
-                d.getFullYear() === Number(year)
-            );
-        });
-        const total = filtered.reduce(
-            (sum: number, e: ExpenseEntity) => sum + Number(e.amount),
-            0,
-        );
-        const breakdown: Record<string, number> = {};
-        filtered.forEach((e: ExpenseEntity) => {
-            breakdown[e.type] = (breakdown[e.type] || 0) + Number(e.amount);
-        });
-        return { total, expenses: filtered, breakdown };
     }
 }

@@ -10,6 +10,7 @@ import {
     UseInterceptors,
 } from '@nestjs/common';
 import { ResponseInterceptor } from 'src/shared/interceptors/response.interceptor';
+import { IPaginatedQueryResults } from 'src/shared/interfaces/paginated-query-results.interface';
 
 import { CreateExpenseDto, UpdateExpenseDto } from '../dtos/request';
 import { ExpenseEntity } from '../entity/expense.entity';
@@ -46,7 +47,9 @@ export class ExpenseController {
     }
 
     @Get()
-    async list(@Query() query): Promise<ExpenseEntity[]> {
+    async list(
+        @Query() query,
+    ): Promise<IPaginatedQueryResults<ExpenseEntity[]>> {
         return this.expenseService.getExpenses(hardCodedUserId, query);
     }
 
@@ -56,18 +59,6 @@ export class ExpenseController {
         @Query('year') year: number,
     ) {
         return this.expenseService.getMonthlyStats(
-            hardCodedUserId,
-            month,
-            year,
-        );
-    }
-
-    @Get('/stats/monthly-breakdown')
-    async monthlyBreakdown(
-        @Query('month') month: number,
-        @Query('year') year: number,
-    ) {
-        return this.expenseService.getMonthlyBreakdown(
             hardCodedUserId,
             month,
             year,

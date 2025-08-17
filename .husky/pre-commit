@@ -1,8 +1,0 @@
-# Run linters 
-npx lint-staged
-
-# Run type checks
-yarn run typecheck
-
-# Run unit tests
-yarn run test:cov

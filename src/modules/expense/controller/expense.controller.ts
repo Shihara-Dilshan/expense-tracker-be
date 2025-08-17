@@ -61,4 +61,16 @@ export class ExpenseController {
             year,
         );
     }
+
+    @Get('/stats/monthly-breakdown')
+    async monthlyBreakdown(
+        @Query('month') month: number,
+        @Query('year') year: number,
+    ) {
+        return this.expenseService.getMonthlyBreakdown(
+            hardCodedUserId,
+            month,
+            year,
+        );
+    }
 }

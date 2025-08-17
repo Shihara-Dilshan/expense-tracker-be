@@ -62,4 +62,24 @@ export class ExpenseService {
         const total = expenses.reduce((sum, e) => sum + e.amount, 0);
         return { total, expenses };
     }
+
+    async getMonthlyBreakdown(userId: string, month: number, year: number) {
+        const expenses = await this.getExpenses(userId, {});
+        const filtered = expenses.filter((e: ExpenseEntity) => {
+            const d = new Date(e.date);
+            return (
+                d.getMonth() + 1 === Number(month) &&
+                d.getFullYear() === Number(year)
+            );
+        });
+        const total = filtered.reduce(
+            (sum: number, e: ExpenseEntity) => sum + Number(e.amount),
+            0,
+        );
+        const breakdown: Record<string, number> = {};
+        filtered.forEach((e: ExpenseEntity) => {
+            breakdown[e.type] = (breakdown[e.type] || 0) + Number(e.amount);
+        });
+        return { total, expenses: filtered, breakdown };
+    }
 }
